@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
+    <style>
+        .body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .containter {
+            width: 90%;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+        }
+
+        .containter div {
+            width: 100px;
+            border: .1px solid rgb(216, 212, 212);
+            background-color: rgb(119, 116, 116);
+        }
+
+        .viz-0 {
+            height: 200px;
+        }
+
+        .viz-1 {
+            height: 500px;
+        }
+
+        .viz-2 {
+            height: 100px;
+        }
+
+        .viz-3 {
+            height: 400px;
+        }
+
+        .viz-4 {
+            height: 300px;
+        }
+    </style>
+    <script>
+        async function bubbleSort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    let firstElem = document.querySelector(`.viz-${j}`);
+                    let secondElem = document.querySelector(`.viz-${j + 1}`);
+                    await animate(firstElem, secondElem);
+
+                    if (arr[j] > arr[j + 1]) {
+                        await animateHeight(firstElem, secondElem);
+                        // Swap the elements
+                        let temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                    }
+                }
+                let lastElem = document.querySelector(`.viz-${n-(i + 1)}`);
+                await animateLast(lastElem);
+            }
+             let lastElem = document.querySelector(`.viz-${0}`);
+            await animateLast(lastElem);
+            console.log(arr, 'arr');
+            return arr;
+        }
+
+        function animate(firstElem, secondElem) {
+            return new Promise(resolve => {
+                gsap.to(firstElem, {
+                    duration: 1,
+                    backgroundColor: "blue",
+                    ease: "power1.inOut",
+                });
+                gsap.to(secondElem, {
+                    duration: 1,
+                    backgroundColor: "blue",
+                    ease: "power1.inOut",
+                    onComplete: () => {
+                        gsap.to(firstElem, {
+                            duration: 1,
+                            backgroundColor: "rgb(119, 116, 116)",
+                            ease: "power1.inOut",
+                        });
+                        gsap.to(secondElem, {
+                            duration: 1,
+                            backgroundColor: "rgb(119, 116, 116)",
+                            ease: "power1.inOut",
+                            onComplete: resolve
+                        });
+                    }
+                });
+            });
+        }
+        function animateHeight(firstElem, secondElem){
+            console.dir(secondElem,'secondElem.style.height');
+            return new Promise(resolve => {
+                gsap.set(firstElem,{
+                    backgroundColor:'pink'
+                })
+                gsap.set(secondElem, {
+                    backgroundColor: 'pink'
+                })
+                gsap.to(firstElem, {
+                    duration: 2,
+                    ease: "power1.inOut",
+                    height : secondElem.clientHeight,
+                     onUpdate: function () {
+                        firstElem.style.top = (100 + 100 - firstElem.clientHeight) + "px";
+                    },
+                });
+                gsap.to(secondElem, {
+                    duration: 2,
+                    ease: "power1.inOut",
+                    height: firstElem.clientHeight,
+                    onUpdate: function () {
+                        secondElem.style.top = (100 + 100 - secondElem.clientHeight) + "px";
+                    },
+                    onComplete : ()=>{
+                        gsap.to(firstElem, {
+                            duration: 1,
+                            backgroundColor: "rgb(119, 116, 116)",
+                            ease: "power1.inOut",
+                        });
+                        gsap.to(secondElem, {
+                            duration: 1,
+                            backgroundColor: "rgb(119, 116, 116)",
+                            ease: "power1.inOut",
+                            onComplete: resolve
+                        });
+                    }
+                });
+            });
+        }
+        function animateLast(lastElem){
+            console.log(lastElem,'lastElem');
+            return new Promise(resolve =>{
+                gsap.set(lastElem,{
+                    backgroundColor: 'green',
+                    onComplete:resolve
+                })
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <div class="body">
+        <div class="containter">
+            <div class="viz-0"></div>
+            <div class="viz-1"></div>
+            <div class="viz-2"></div>
+            <div class="viz-3"></div>
+            <div class="viz-4"></div>
+        </div>
+    </div>
+    <button type="button" onclick="bubbleSort([2,5,1,4,3])"> Start Animation</button>
+</body>
+
+</html>
